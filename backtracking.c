@@ -16,10 +16,12 @@ void ImprimirCombinacoes1(char *vet, int pos, int n, char *vetAux){             
             else if(vet[i] == 'i')
                 cont_i ++;
         }
-        if(cont_a > cont_e+cont_i)
+        if(cont_a > cont_e+cont_i){
+            printf("\n");
             for(i=0;i<n;i++)
                 printf("%c",vet[i]);
-            printf("\n");
+        }
+            
     }else  {
         for(i=0;i<=3;i++){
             vet[pos] = vetAux[i];
@@ -34,13 +36,14 @@ void ImprimirCombinacoes2(int *vet,int pos,int n,int *vetAux){                  
     if(pos == n){
         int Soma = 0;
         for(i=0;i<n;i++)
-            Soma = Soma+vet[i];
-        if(Soma/2 == 0)
+            Soma += vet[i];
+        if(Soma % 2 == 0){
+            printf("\n");
             for(i=0;i<n;i++)
                 printf("%d",vet[i]);
-            printf("\n");
+        }    
     }else {
-        for(i=0;i<=4;i++){
+        for(i=0;i<4;i++){
             vet[pos] = vetAux[i];;
             ImprimirCombinacoes2(vet,pos+1,n,vetAux);
         }
@@ -51,16 +54,18 @@ void ImprimirCombinacoes2(int *vet,int pos,int n,int *vetAux){                  
 void ImprimirCombinacoes3(int *vet,int pos,int n, int *vetAux,int valor){                  //vetAux[1,5,10,,25,50]
     int i;
     if(pos == n){
-        int soma;
-        for(i=0;i<n;i++)
-            soma = soma + vet[i];
-        if(soma == valor)
+        int soma = 0;
+        for (i=0;i<n;i++)
+            soma += (vet[i]*vetAux[i]);
+        if(soma == n){
+            printf("\n");
             for(i=0;i<n;i++)
                 printf("%d",vet[i]);
-            printf("\n");
+        }
     }else {
-        for(i=0;i<=5;i++){
-            vet[pos] = vetAux[i];;
+        int maximo = (int) valor/vetAux[pos];
+        for (i=0;i<=maximo;i++){
+            vet[pos] = i;
             ImprimirCombinacoes3(vet,pos+1,n,vetAux,valor);
         }
     }

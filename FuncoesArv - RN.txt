@@ -1,0 +1,215 @@
+Implementação
+    Funções que se diferenciam da Árvore AVL 
+        Cor e TrocaCor (Funções auxiliares)
+        Rotações 
+        Balanceamento
+        Inserção 
+        Remoção
+
+
+// Na estrutura da árvore a diferença da árvore binária é a  inclusão de uma váriavel inteira cor.
+#define BLACK 0;
+#define RED 1;
+typedef struct ARVORE {
+    int info; 
+    int cor;
+    struct ARVORE *esq;
+    struct ARVORE *dir;
+}
+
+//função auxiliares para acessar a cor de um nó
+int cor(ARVORE *a){
+    if(a==NULL)
+    return BLACK;
+    else 
+    return a->cor;
+}
+
+//É uma operação que não altera a estrutura ou conteúdo da árvore.
+void trocaCor(ARVORE *a){
+    a->cor =. !a->cor;
+    If(a->esq != NULL)
+    a->esq->cor =  !a->esq->cor;
+    If(a->Dir != NULL)
+    a->dir->cor =  !a->dir->cor;
+}
+
+// Rotação da Arvore Rubro Negra
+- Dado um conjunto de três nós, a rotação visa deslocar um nó vermelho que esteja à esquerda para à direita e vice-versa
+- A rotação apenas atualiza ponteiros, de modo que a sua complexidade é "O(l)"
+
+//rotação a esquerda
+ARVORE *RotacaoEsquerda(ARVORE *a){
+    ARVORE *aux = a->dir;
+    a->dir = aux->esq;
+    aux-esq = a;
+    aux->cor = a->cor;
+    a->cor = RED;
+    return aux;
+}
+
+//rotação a direita 
+ARVORE *RotacaoDireita(ARVORE *a){
+    ARVORE *aux = a->esq;
+    a->esq = aux->dir;
+    aux->dir = a;
+    aux->cor = a->cor;
+    a->cor = RED;
+    return aux;
+}
+
+//função para reestabelecer o balanceamento da árvore e garantir que suas propriedades são mantidas.
+ARVORE *RotacaoDuplaEsqRED(ARVORE *a){
+    trocaCor(a);
+    if(cor(a->dir->esq) == RED){
+        a->dir = RotacaoDireita(a->dir);
+        a = RotacaoEsquerda(a);
+    }
+    return a;
+}
+
+ARVORE *RotacaoDuplaDirRED(ARVORE *a){
+    trocaCor(a);
+    if(cor(a->esq->esq) == RED){
+        a = RotacaoDireita(a);
+        trocaCor(a);
+    }
+    return a;
+}
+
+ARVORE *balancear(ARVORE *a){
+    if(cor(a->dir) == RED)
+        a = RotacaoEsquerda(a);
+    if(a-> != NULL && cor(a->dir) == RED && cor(a->esq->esq) == RED)
+        a = RotacaoDireita(a);
+    if(cor(a->esq) == RED && cor(a->dir) == RED)
+        trocaCor(a);
+    return a;
+}
+
+// Inserir em uma Árvore Rubro-Negra 
+Para inserir um valor "x" na árvore:
+- "raiz" é  NULL : insere o nó
+- "x" é menor do que a raiz: vá para a sub-árvore "esquerda"
+- "x" é maior do que a raiz: vá para sub-árvore "direita"
+
+// função responsavel pela busca do local de inserção do nó 
+int Insere(ARVORE* raiz, int valor){
+    int resp;
+    *raiz = insereNo(*raiz, valor, &resp);
+    if((*raiz) != NULL)
+        (*raiz)->cor =BLACK;
+    return resp;
+}
+
+// insere nó
+ARVORE *insereNo(ARVORE *a, int valor, int *resp){
+    if(a == NULL){
+        ARVORE *novo
+        novo = (ARVORE) malloc(sizeof(ARVORE));
+        if(novo == NULL){
+            *resp = 0;
+            return NULL;
+        }
+        novo->info = valor;
+        novo->cor = RED;
+        novo->dir = NULL;
+        novo->esq = NULL;
+        *resp = 1;
+        return novo;
+    }else if(valor == a->info)
+        *resp = 0;
+    else{
+        if(valor<a->info)
+            a->esq = insereNo(a->esq,valor,resp);
+        else
+            a->dir = insereNo(a->dir, valor, resp);
+    }
+    if(cor(a->dir) == RED && cor(a->esq) ==BLACK)
+        a = RotacaoEsquerda(a);
+    if(cor(a->esq) == RED && cor(a->esq->esq) == RED)
+        a = RotacaoDireita(a);
+    if(cor(a->esq) == RED && cor(a->dir) == RED)
+        trocaCor(a);
+    return a;
+}
+
+// Na main 
+int x = insere(raiz, valor);
+
+//Remoção em árvore Rubro-Negra
+Existem 3 tipos de Remoção  
+    - nó folha (sem filho)
+    - nó com 1 filho
+    - nó com 2 filhos
+
+Os 3 tipos de romoção trabalham juntos. A remoção sempre remove um elemento especifico da árvore,
+o qual pode ser um nó folha, ter um ou dois filhos.
+
+Cuidados:
+    - Não se pode remover uma árvore vazia
+    - Removendo o último nó, a árvore fica vazia
+
+Balanceamento:
+    - Ao voltar na recursão, verifique as propriedades de cada sub-árvore
+    - aplique a rotação ou mudança de cor necessária alguma propriedade foi violada
+
+//Funções resopnsável pela busca do nó a ser removido
+int remove(ARVORE *raiz,int valor){
+    if(consultaArv(raiz,valor)){
+        ARVORE *aux = *raiz;
+        *raiz = removeNo(aux,valor);
+        if(*raiz != NULL)
+            (*raiz)->cor = BLACK;
+        return 1;
+    }else
+        return 0;
+}
+
+ARVORE *removeNo(ARVORE *a, int valor){
+    if(valor < a->info){
+        if(cor(a->esq) == BLACK  && cor(a->esq->esq) == BLACK)
+            a = RotacaoDuplaEsqRED(a);
+        a->esq = removeNo(a->esq, valor); 
+    }else {
+        if(cor(a->esq) == RED)
+            a = RotacaoEsquerda(a);
+        if(valor == a->info && (a->dir == NULL)){
+            free(a);
+            return NULL;;
+        }
+    }
+    if(cor(aa->dir) == BLACK && cor(a->dir) == BLACK)
+        a = RotacaoDuplaDirRED(a);
+    if(valor == a->info){
+        ARVORE *x = procuraMenor(a->dir);
+        a->info = x->info;
+        a->dir = removerMenor(a->dir);
+    }else   
+        a->dir = removeNo(a->dir, valor);
+    return balancear(a);
+}
+
+ARVORE *removerMenor(ARVORE *a){
+    if(a->a->esq == NULL){
+        free(a);
+        return NULL;
+    }
+    if(cor(a->esq) == BLACK && cor(a->esq->esq) == BLACK)
+        a = RotacaoDuplaEsqRED(a);
+    a->esq = removerMenor(a->esq);
+    return balancear(a);
+}
+
+ARVORE *procuraMenor(ARVORE *atual){
+    ARVORE *no1 = atual;
+    ARVORE *no2 = atual->esq;
+    while(no2 != NULL){
+        no1 = no2;
+        no2 = no2->esq;
+    }
+    return no1;
+}
+
+//Na main
+int x = remove(raiz,valor);

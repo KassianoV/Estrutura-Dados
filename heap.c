@@ -3,7 +3,7 @@
 #include<math.h>
         
 int totalElementos = 0;
-int heap[N];
+int heap[5];
 
 int indiceFilhoEsq(int x){
     int indice = (2*x)+1;
@@ -78,7 +78,7 @@ int Remover(int *heap){
 
 int main (){
     int valor;
-    int heap[totalElementos];
+    int heap[5];
     printf("Menu:");
     printf("1 - Inserir um elemento \n 2 - Remover um elemento\n 3 - Imprimir \n 4 - Sair");
     int opcao;

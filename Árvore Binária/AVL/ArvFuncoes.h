@@ -468,11 +468,11 @@ ARVORE *Remover (ARVORE *a, int x, int *hMudou) {
             }
             //Nenhum filho nulo
             else {
-                ARVORE *maiorEsp = a->esq;
-                while(maiorEsp->dir != NULL)
-                    maiorEsp = maiorEsq->dir;
+                ARVORE *maiorEsq = a->esq;
+                while(maiorEsq->dir != NULL)
+                    maiorEsq = maiorEsq->dir;
                 
-                a->info = maiorEsp->info;
+                a->info = maiorEsq->info;
                 a->esq = Remover(a->esq, a->info, hMudou);
 
                 if(*hMudou == 1){
@@ -540,7 +540,7 @@ ARVORE *Remover (ARVORE *a, int x, int *hMudou) {
 
                     case 0:
                         a->FB = -1;
-                        *hMudou 0;    
+                        *hMudou = 0;    
                     break;
                 
                     case -1:

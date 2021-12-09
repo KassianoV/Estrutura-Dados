@@ -73,11 +73,11 @@ void ImprimirCombinacoes3(int *vet,int pos,int n, int *vetAux,int valor){       
 
 int main(){
     char *vetchar;
-    char vetAux[3] = {'a','e','i'};
+    char VetAux[3] = {'a','e','i'};
     int n;    
     printf("Digite o tamanho da combinacao 1:");
     scanf("%d",&n);
-    ImprimirCombinacoes1(vetchar, 0, n, vetAux);
+    ImprimirCombinacoes1(vetchar, 0, n, VetAux);
 
     int *vet;
     int vetAux[4] = {15,31,55,44};

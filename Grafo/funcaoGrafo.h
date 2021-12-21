@@ -178,21 +178,39 @@ void CaminhoMaisCurto(lista **g, int b,int *vet, int pos,int*vetAux){
     }
 }
 
-void CaminhoMenosCustoso(lista **g, int b,int *vet, int pos,int*menor, int custo){
-    if(vet[pos-1] == b){        // chegou no destino
-        int i;
-        if(custo<=menor[0]){
-            menor[0] = custo;
+int CustoAresta(lista **g, int a, int b){
+    lista *p = g[a];
+    while(p != NULL){
+        if(p->destino == b)
+            return p->custo;
+        p = p->prox;
+    }
+    return -1;
+}
+
+int CalculaCusto(lista **g,int *vet, int n){
+    int i,custo = 0;
+    for(i=1;i<n;i++)
+        custo += CustoAresta(g,vet[i-1],vet[i]);
+    return custo;
+}
+
+void CaminhoMenosCustoso(lista **g,int *vet, int pos,  int d, int*menor, int *vetAux, int *tam){
+    if(vet[pos-1] == d){        // chegou no destino
+      int custo = CalculaCusto(g,vet,pos);
+        if(custo < *menor){
+            int i;
+            *menor = custo;
+            *tam = pos;
             for(i=0;i<pos;i++)
-                vet[i-1] = menor[i+1];
-            menor[1] = pos;
+                vetAux[i] = vet[i];
         }
     }else{                                  //recursão
         lista *p = g[vet[pos-1]];
         while(p != NULL){
             if(!existe(vet,p->destino,pos)){
                 vet[pos] = p->destino;
-                CaminhoMenosCustoso(g,b,vet,pos+1,menor,custo);
+                CaminhoMenosCustoso(g,vet,pos+1,d,menor,vetAux,tam);
             }
             p = p->prox;
         }

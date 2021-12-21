@@ -3,7 +3,6 @@
 #endif //ARVFUNCOES_H_INCLUDED
 #include <stdio.h>
 #include <stdlib.h>
-#define NULL __null
 
 //Estrutura da lista
 typedef struct lista{
@@ -67,20 +66,6 @@ lista *RemoverLista(lista *l, int d){
     l->prox = RemoverLista(l->prox, d);
     return l;
 }
-
-/* lista *Remover(lista *l, int d){
-    lista *no = Buscar(l,d);
-      if(no == NULL)
-        return NULL;
-    if(no->destino == d){
-        lista *no = l;
-        l = l->prox;
-        free(no);
-        return l;
-    }
-    l->prox = RemoverLista(l->prox, d);
-    return l;
-}*/
 
 //Imprimir Grafo
 void ImprimirGrafo(lista**g, int n){
@@ -155,7 +140,7 @@ int existe(int *vet,int valor,int pos){
 }
 
 // Imprimir caminho 
-void Caminho(lista **g, int b,int *vet, int pos){
+void Caminhos(lista **g, int b,int *vet, int pos){
     if(vet[pos-1] == b){        // chegou no destino
         int i;
         printf("\n");
@@ -166,7 +151,48 @@ void Caminho(lista **g, int b,int *vet, int pos){
         while(p != NULL){
             if(!existe(vet,p->destino,pos)){
                 vet[pos] = p->destino;
-                Caminho(g,b,vet,pos+1);
+                Caminhos(g,b,vet,pos+1);
+            }
+            p = p->prox;
+        }
+    }
+}
+
+void CaminhoMaisCurto(lista **g, int b,int *vet, int pos,int*vetAux){
+    if(vet[pos-1] == b){        // chegou no destino
+        int i;
+        if(vet <= vetAux){
+            for(i=0;i<pos;i++)
+                vet[i-1] = vetAux[i+1];
+            vetAux[1] = pos;
+        }
+    }else{                                  //recursão
+        lista *p = g[vet[pos-1]];
+        while(p != NULL){
+            if(!existe(vet,p->destino,pos)){
+                vet[pos] = p->destino;
+                CaminhoMaisCurto(g,b,vet,pos+1,vetAux);
+            }
+            p = p->prox;
+        }
+    }
+}
+
+void CaminhoMenosCustoso(lista **g, int b,int *vet, int pos,int*menor, int custo){
+    if(vet[pos-1] == b){        // chegou no destino
+        int i;
+        if(custo<=menor[0]){
+            menor[0] = custo;
+            for(i=0;i<pos;i++)
+                vet[i-1] = menor[i+1];
+            menor[1] = pos;
+        }
+    }else{                                  //recursão
+        lista *p = g[vet[pos-1]];
+        while(p != NULL){
+            if(!existe(vet,p->destino,pos)){
+                vet[pos] = p->destino;
+                CaminhoMenosCustoso(g,b,vet,pos+1,menor,custo);
             }
             p = p->prox;
         }

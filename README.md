@@ -20,3 +20,15 @@
     Recursividade <br/>
     Exploração de diferentes caminhos na busca por uma solução 
 </p>
+
+<p>
+3 - Heap <br/>
+    È uma estrutura que utiliza um vetor para armazenamento de dados, o qual simula uma árvore binária balanceada<br/>
+    - Os filhos do elemento armazenado na posição i do veor se encontram nas posições 2i+1 e 2i+2 <br/>
+    - O pai de i está na posição [i-1/2]
+</p>
+
+<p>
+4 - Grafo <br/>
+
+</p>

@@ -6,10 +6,12 @@
 int main (){
     setlocale(LC_ALL, "Portuguese");
     int n, origem, destino,custo;
-    int entrada e saida,pos,Verifica;
+    int entrada, saida,pos,Verifica;
+    int *vet, *vetAux;
+
     printf("Quantos nós vai ter o grafo?");
     scanf("%d",&n);
-   
+    
     //Declaração do grafo dinamica
     lista**g;
     g = (lista**) malloc ((n+1)*sizeof(lista*));
@@ -36,7 +38,12 @@ int main (){
                 scanf("%d \n",&origem);
                 printf("Destino:");
                 scanf("%d \n",&destino);
-                RemoverAresta(g,origem,destino);
+
+                if(Buscar(g,origem) == NULL)
+                    return NULL;
+                else  
+                    RemoverAresta(g,origem,destino);
+                
             break;
 
             case 3:
@@ -62,15 +69,46 @@ int main (){
             break;
 
             case 6:
-                
+                printf("Qual origem?");
+                scanf("%d",&origem);
+                printf("Qual destino?");
+                scanf("%d",&destino);
+
+                vet = (int *)malloc(n*sizeof(int));
+                vet[0] = origem;
+                Caminhos(g,destino,vet,1);
             break;
 
             case 7:
-             
+                printf("Qual origem?");
+                scanf("%d",&origem);
+                printf("Qual destino?");
+                scanf("%d",&destino);
+
+                vet = (int *) malloc(n*sizeof(int));
+                vet[0] = origem;
+                CaminhoMaisCurto(g,destino,vet,1,vetAux);
+
+                for(int i=0;i<pos;i++)
+                    printf("%d",vetAux[i]);
             break;
 
             case 8:
-             
+                printf("Qual origem?");
+                scanf("%d",&origem);
+                printf("Qual destino?");
+                scanf("%d",&destino);
+
+                vet = (int *) malloc(n*sizeof(int));
+                vet[0] = origem;
+                vetAux[0] = 1000000;
+                CaminhoMenosCustoso(g,destino,vet,1,vetAux,custo);
+
+                for(int i=0;i<pos;i++){
+                    printf("%d",vetAux[i]);
+                    if(i<= vetAux[1])
+                        printf("->");
+                }
             break;
 
             case 9:
@@ -83,5 +121,5 @@ int main (){
             break;
         }
     }
-    
+    return 0;
 }

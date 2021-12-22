@@ -1,31 +1,29 @@
-#ifndef ARVFUNCOES_H_INCLUDED
-#define ARVFUNCOES_H_INCLUDED
-#endif //ARVFUNCOES_H_INCLUDED
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "ArvFuncoes.h" 
 
 //Estrutura da Árvore
-typedef struct arvore {
+struct ARVORE  {
     int info;
-    struct arvore *esq; 
-    struct arvore *dir;
-}ARVORE;
+    struct ARVORE *dir;
+    struct ARVORE *esq; 
+};
 
-// Árvore vazia
+//Inicializar a árvore vazia 
 ARVORE *inicia_arv(){
     return NULL;
 }
 
-//Criar Árvore
+//Criar um nó na árvore 
 ARVORE *CriaNo(int num){
-    ARVORE *a = (ARVORE*)malloc(sizeof(ARVORE));
-    a->info = num;
+    ARVORE *a = (ARVORE*)malloc(sizeof(struct ARVORE));
+   a->info = num;   // todas as chamadas não são por parametro (*)
     return a;
 }
 
-//1 - Ler uma árvore de um arquivo fornecido pelo usuário
+//Ler arquivo que contem a árvore 
 ARVORE *LerArvore(FILE *arq){
     char c;
     int num;
@@ -47,7 +45,7 @@ ARVORE *LerArvore(FILE *arq){
     }
 }
 
-//Altura da Árvore
+//Altura da árvore
 int Altura(ARVORE *a){
     if(a == NULL)
         return 0;
@@ -61,6 +59,7 @@ int Altura(ARVORE *a){
     }
 }
 
+//Imprimir nível da árvore
 void ImprimirNivel(ARVORE *a, int cont, int nivel){
      if(a != NULL){                // NULL?
         if(cont == nivel)
@@ -72,7 +71,6 @@ void ImprimirNivel(ARVORE *a, int cont, int nivel){
      }
 }
 
-//2 - Imprimir a árvore (opções: pré-ordem; em-ordem; pós-ordem; e em largura) ok
 void ImprimirPreOrdem(ARVORE *a){
     if(a != NULL){
         printf("%d ",a->info);         // Raiz
@@ -108,6 +106,19 @@ void ImprimirEmLargura(ARVORE *a){
             ImprimirNivel(a, 0,i);
             printf("\n");
         }
+    }
+    printf("\n");
+}
+
+void ImprimirMaioresIguais(ARVORE *a, int x){
+    if(a != NULL){
+        if(a->info >= x){
+            printf("%d ", a->info);
+            ImprimirMaioresIguais(a->esq,x);
+            ImprimirMaioresIguais(a->dir,x);
+        }
+        else   
+             ImprimirMaioresIguais(a->dir,x);
     }
     printf("\n");
 }

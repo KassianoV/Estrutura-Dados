@@ -61,8 +61,7 @@ void inserir(char *nomeArq, int x){
     fwrite(&a, sizeof(registro), 1, arq);
     fclose(arq);
 }
-int BuscarAlu
-no(Aluno *a, int mat){
+int BuscarAluno(Aluno *a, int mat){
     if(a != NULL){
         if(a->matricula == mat)
             return 1;

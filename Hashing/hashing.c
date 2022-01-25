@@ -2,77 +2,176 @@
 #include<stdlib.h>
 #define N 11
 
-typedef struct aluno{
-    int matricula;
-    char nome[50];
-    char curso[50];
-}Aluno;
-
-int hash1(int key, int size){
-    key = key % 100;
-    return key % size;
-}
-
-int hash2(int key, int size){
-    return size-2-(key%(size-2));
-}
-
 typedef struct registro{
     int info;
     int disponibilidade;
-}registro;
+    void *item;
+}*Registro;
+
+int hash(int key, int size){
+    return key % size;
+}
 
 void inicializar(char *nomeArq){
     FILE *arq = fopen(nomeArq, "wb");
-    registro a;
+    Registro a = (Registro) malloc(sizeof(struct registro));
     int i;
-    a.disponibilidade = 1;
+    a->disponibilidade = 1;
     for(i=0; i<N; i++)
-        fwrite(&a, sizeof(registro), 1,arq);
+        fwrite(&a, sizeof(Registro), 1,arq);
     fclose(arq);    
 }
 
-int AcharPosicao(char * nomeArq, int x){
-    int pos = hash1(x);
-    registro a;
-
+ AcharPosicao(char * nomeArq, int x){
     FILE *arq = fopen(nomeArq, "rb");
-    fseek(arq, pos * sizeof(registro), SEEK_SET);
-    fread(&a, sizeof(registro), 1, arq);
+    int pos = hash(x,N);
 
-    while(a.disponibilidade == 0){
-        pos = (pos+1) % N;
-        fseek(arq, pos *sizeof(registro), SEEK_SET);
-        fread(&a, sizeof(registro), 1, arq);
+    Registro aux = (Registro) malloc(sizeof(struct registro));
+
+    fseek(arq, pos * sizeof(Registro), SEEK_SET);
+    fread(aux, sizeof(Registro), 1, arq);
+
+    while(aux->disponibilidade == 0){
+        pos = (pos+1)%N;
+        fseek(arq, pos*sizeof(Registro),SEEK_SET);
+        fread(&aux, sizeof(Registro), 1,arq);
     }
     fclose(arq);
     return pos;
 }
 
-void inserir(char *nomeArq, int x){
+void inserir(char *nomeArq, int x, void*obj){
     int pos = AcharPosicao(nomeArq, x);
     FILE *arq = fopen(nomeArq, "r+b");
-    registro a;
+    Registro a = (Registro) malloc (sizeof(Registro));
 
-    a.info = x;
-    a.disponibilidade = 0;
+    a->info = x;
+    a->disponibilidade = 0;
+    a->item = obj;
 
-    fseek(arq, pos * sizeof(registro), SEEK_SET);
-    fwrite(&a, sizeof(registro), 1, arq);
+    fseek(arq, pos * sizeof(Registro), SEEK_SET);
+    fwrite(&a, sizeof(Registro), 1, arq);
     fclose(arq);
 }
-int BuscarAluno(Aluno *a, int mat){
-    if(a != NULL){
-        if(a->matricula == mat)
-            return 1;
-        else 
-            return 0;
+
+void ImprimirArquivo(char *nomeArq){
+    FILE *arq = fopen(nomeArq, "rb");
+    Registro a = (Registro) malloc(sizeof(Registro));
+    int i;
+    for (i=0;i<N;i++){
+        fread(a,sizeof(Registro),1,arq);
+        if(a->disponibilidade =0)
+            printf("Matricula: %d\n", a->info);
+        else    
+            printf("Espaco %d esta disponivel\n",i);
     }
-    return 0;
+    fclose(arq);
 }
 
+typedef struct aluno{
+	int matricula;
+	char nome[150];
+	char email[150];
+	float CR;
+}*Aluno;
 
-int main (){
-    
+int BuscarObj(char *nomeArq, int key, void *obj){
+	FILE *arq=fopen(nomeArq,"rb");
+	Registro reg=(Registro) malloc(sizeof(struct registro));
+	
+	int pos=hash(key,N);
+	fseek(arq,pos*sizeof(struct registro),SEEK_SET);
+
+	fread(reg,sizeof(struct registro),1,arq);
+	if(reg->info==key){
+		obj=reg->info;
+		return 1;
+	}else{
+		int vrf=0;
+		for(int i=pos;i<N;i++){
+			fread(reg,sizeof(struct registro),1,arq);
+			if(reg->disponibilidade==0){
+				obj=reg->info;
+				return 1;
+			}
+			if(pos==N-1 && vrf==0){
+				pos=0;
+				vrf=1;
+			}
+		}
+	}
+	return 0;
+}
+Aluno CriaAluno(){
+	Aluno a=(Aluno) malloc(sizeof(struct aluno));
+
+	getchar();
+	printf("\nDigite o nome do aluno: ");
+	fgets(a->nome,150,stdin);
+	
+	if(a->nome[strlen(a->nome)-1]=='\n')
+		a->nome[strlen(a->nome)-1]='\0';
+
+	printf("\nDigite o email do aluno: ");
+	fgets(a->email,150,stdin);
+
+	if(a->email[strlen(a->email)-1]=='\n')
+		a->email[strlen(a->email)-1]='\0';
+
+	printf("\nDigite a matricula do aluno: ");	
+	scanf("%d",&a->matricula);
+
+	printf("\nDigite o CR do aluno: ");
+	scanf("%f",&a->CR);
+
+	return a;
 }
 
+int menu(){
+	int opc=0;		
+	printf("\nEscolha uma opcao\n"); 
+	printf("[1] Inserir um novo aluno\n");
+	printf("[2] Imprimir as informações de um determinado aluno\n");
+	printf("[3] Imprimir a tabela de dispersao\n");
+	printf("[4] Sair\n");
+	scanf("%d",&opc);
+	return opc;
+}
+
+int main(){
+	int opc=0,mat;
+	Aluno al;
+	char nomeArq[15];
+	strcpy(nomeArq,"registro.bin");
+	Inicializar(nomeArq);
+
+	while(opc!=4){
+		opc=menu();
+		switch(opc){
+			case 1:
+				al=CriaAluno();
+				Inserir(nomeArq,al->matricula,al);
+				break;
+			case 2: printf("Digite o numero da matricula do aluno: ");
+				scanf("%d",&mat);
+
+				if(BuscarObj(nomeArq,mat,al)==1){
+					al=(Aluno) al;
+					printf("O nome do aluno eh %s\nO email do aluno eh %s\nA matricula do aluno eh %d\nO CR do aluno eh %.2f",al->nome,al->email,al->matricula,al->CR);
+				}else{
+					printf("O aluno nao esta na lista\n");
+				}
+				break;
+			case 3:
+				ImprimirArquivo(nomeArq);
+				//Imprimir tabela hash
+				break;
+			case 4:
+				//Sair
+				break;
+			default:
+				printf("\nPor favor digite uma opcao valida[1-4]\n");
+		}
+	}
+	return 0;
+}
